@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>بطولة الشرقية للعبة روميكوب — احجز مكانك ونافس على اللقب!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b1426;--bg2:#111d32;--bg3:#182640;--border:#1e3050;--border-lt:#253a56;
+  --ink:#e8ecf1;--ink-s:#8899b0;--ink-m:#5a6f8a;
+  --red:#ff2d55;--blue:#3b82f6;--cyan:#22d3ee;--purple:#a855f7;--pink:#ec4899;
+  --green:#22c55e;--yellow:#eab308;
+  --r:14px;--shadow:0 4px 24px rgba(0,0,0,.35);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  line-height:1.6;min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;text-align:right;
+  background-image:
+    radial-gradient(60rem 30rem at 85% -10%,rgba(255,45,85,.13),transparent 60%),
+    radial-gradient(55rem 30rem at -10% 25%,rgba(59,130,246,.15),transparent 60%),
+    radial-gradient(50rem 32rem at 50% 110%,rgba(168,85,247,.13),transparent 60%);
+  background-attachment:fixed}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
+input{font-family:inherit}
+::-webkit-scrollbar{display:none}
+body{scrollbar-width:none}
+
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(37,58,86,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(37,58,86,.2) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 90% 50% at 50% 0%,black 20%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 50% at 50% 0%,black 20%,transparent 70%)}
+
+.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 20px 60px}
+
+.gcard{background:rgba(17,29,50,.75);border:1px solid var(--border);border-radius:var(--r);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:var(--shadow)}
+
+.neon{background:linear-gradient(100deg,var(--red),var(--purple) 45%,var(--blue));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 20px rgba(168,85,247,.3))}
+
+.btn{display:block;width:100%;padding:14px;border-radius:12px;font-family:inherit;
+  font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .15s;text-align:center}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-p{background:linear-gradient(90deg,var(--red),var(--purple),var(--blue));
+  color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 6px 28px rgba(168,85,247,.35)}
+.btn-s{background:var(--bg3);color:var(--ink-s);border:1px solid var(--border)}
+
+.field{width:100%;padding:13px 14px;border-radius:12px;font-family:inherit;font-size:15px;
+  background:rgba(17,29,50,.8);border:1px solid var(--border);color:var(--ink);
+  outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.field:focus{border-color:rgba(59,130,246,.5);box-shadow:0 0 0 3px rgba(59,130,246,.12),0 0 20px rgba(59,130,246,.1)}
+.field::placeholder{color:var(--ink-m)}
+
+.phone-wrap{display:flex;gap:8px}
+.phone-prefix{display:flex;align-items:center;justify-content:center;width:70px;
+  border-radius:12px;border:1px solid var(--border);background:rgba(24,38,64,.6);
+  font-size:14px;font-weight:700;color:var(--ink-s);direction:ltr;flex-shrink:0}
+
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 12px;
+  font-size:11px;font-weight:700;border:1px solid}
+.chip-green{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.1);color:#4ade80}
+.chip-red{border-color:rgba(255,45,85,.3);background:rgba(255,45,85,.1);color:var(--red)}
+.chip-blue{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.1);color:var(--blue)}
+.chip-purple{border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.1);color:var(--purple)}
+
+.pbar{height:7px;border-radius:10px;background:var(--bg3);overflow:hidden}
+.pbar-fill{height:100%;border-radius:10px;transition:width .6s ease}
+
+.gA{color:var(--red)}.gB{color:var(--blue)}.gC{color:var(--purple)}.gD{color:var(--cyan)}
+.bA{border-color:rgba(255,45,85,.3)!important}.bB{border-color:rgba(59,130,246,.3)!important}
+.bC{border-color:rgba(168,85,247,.3)!important}.bD{border-color:rgba(34,211,238,.3)!important}
+.fA{background:linear-gradient(90deg,var(--red),var(--pink))}
+.fB{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.fC{background:linear-gradient(90deg,var(--purple),var(--pink))}
+.fD{background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.glow-A{box-shadow:0 0 20px rgba(255,45,85,.2),0 0 50px rgba(255,45,85,.08)!important}
+.glow-B{box-shadow:0 0 20px rgba(59,130,246,.2),0 0 50px rgba(59,130,246,.08)!important}
+.glow-C{box-shadow:0 0 20px rgba(168,85,247,.2),0 0 50px rgba(168,85,247,.08)!important}
+.glow-D{box-shadow:0 0 20px rgba(34,211,238,.2),0 0 50px rgba(34,211,238,.08)!important}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;overflow:hidden}
+.tab{flex:1;padding:13px 8px;text-align:center;font-size:13px;font-weight:700;color:var(--ink-m);transition:.2s}
+.tab.active{color:var(--purple);background:rgba(168,85,247,.08);border-bottom:2px solid var(--purple)}
+
+.msg{border-radius:12px;padding:12px 14px;font-size:13px;font-weight:700;margin-top:10px}
+.msg-err{background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.2);color:var(--red)}
+
+.banner{border-radius:var(--r);padding:28px 20px;text-align:center;margin-bottom:16px}
+
+.bracket-group{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;
+  border-radius:10px;border:1px solid var(--border);background:rgba(17,29,50,.6);margin-bottom:8px}
+.bracket-final{border-radius:var(--r);padding:20px;text-align:center;
+  border:1px solid rgba(168,85,247,.25);margin-top:16px;
+  background:linear-gradient(135deg,rgba(255,45,85,.04),rgba(168,85,247,.08),rgba(59,130,246,.04))}
+
+.ltr{direction:ltr;unicode-bidi:embed;font-variant-numeric:tabular-nums}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.6)}70%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes pulseG{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes dice{0%{transform:rotate(0) scale(1)}25%{transform:rotate(90deg) scale(1.12)}50%{transform:rotate(180deg) scale(.95)}75%{transform:rotate(270deg) scale(1.08)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.anim-fade{animation:fadeUp .45s ease both}
+.anim-pop{animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both}
+.anim-dice{animation:dice .7s linear infinite}
+.anim-float{animation:float 4s ease-in-out infinite}
+.anim-spin{animation:spin 1.2s linear infinite}
+.anim-pulse{animation:pulseG 2s ease-in-out infinite}
+
+.lock-badge{font-size:11px;font-weight:700;color:var(--ink-m)}
+.tip{font-size:11px;color:var(--ink-m);text-align:center;margin-top:8px}
+
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;
+  font-size:13px;font-weight:700;color:var(--ink);box-shadow:var(--shadow);
+  animation:fadeUp .3s ease both;pointer-events:none;max-width:90%;text-align:center}
+.toast.out{opacity:0;transform:translateX(-50%) translateY(-10px);transition:all .3s}
+
+@media(min-width:640px){.wrap{max-width:520px}}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<div class="wrap" id="app">
+
+  <!-- HEADER -->
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:20px 0 8px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="data:image/png;base64,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" alt="روميكوب" style="height:38px;width:auto;flex-shrink:0">
+      <span class="neon" style="font-size:22px;font-weight:900;letter-spacing:-1px">بطولة الشرقية</span>
+    </div>
+    <span id="statusChip" class="chip chip-green" style="display:none">
+      <span style="width:6px;height:6px;border-radius:50%;background:currentColor" class="anim-pulse"></span>
+      <span id="statusText"></span>
+    </span>
+  </header>
+
+  <!-- HERO -->
+  <section style="text-align:center;padding:24px 0 16px">
+    <div class="anim-float" style="width:140px;margin:0 auto 20px">
+      <img src="data:image/png;base64,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" alt="روميكوب" style="width:100%;height:auto;filter:drop-shadow(0 0 30px rgba(255,45,85,.4)) drop-shadow(0 4px 20px rgba(0,0,0,.5))">
+    </div>
+    <h1 class="neon" style="font-size:40px;font-weight:900;line-height:1.15">بطولة الشرقية</h1>
+    <p style="font-size:18px;font-weight:800;color:var(--ink);margin-top:8px">للعب روميكوب</p>
+    <p style="font-size:13px;color:var(--ink-s);max-width:340px;margin:6px auto 0">احجز مكانك الآن وسيتم توزيعك عشوائياً على إحدى المجموعات</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px">
+      <div class="gcard" style="padding:14px;text-align:center">
+        <div style="font-size:20px">🎮</div>
+        <div class="ltr" style="font-size:22px;font-weight:900;margin-top:2px">16</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink-m)">لاعب</div>
+      </div>
+      <div class="gcard" style="padding:14px;text-align:center">
+        <div style="font-size:20px">⚔️</div>
+        <div class="ltr" style="font-size:22px;font-weight:900;margin-top:2px">4</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink-m)">مجموعات</div>
+      </div>
+      <div class="gcard" style="padding:14px;text-align:center">
+        <div style="font-size:20px">🎯</div>
+        <div class="ltr" style="font-size:22px;font-weight:900;margin-top:2px">1</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink-m)">متأهل من كل مجموعة</div>
+      </div>
+      <div class="gcard" style="padding:14px;text-align:center">
+        <div style="font-size:20px">🏆</div>
+        <div class="ltr" style="font-size:22px;font-weight:900;margin-top:2px">4</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink-m)">لاعبين في النهائي</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANNERS -->
+  <div id="bannerFull" style="display:none" class="banner gcard bA anim-fade">
+    <div style="font-size:36px">🔒</div>
+    <h2 style="font-size:18px;font-weight:900;margin-top:8px">اكتملت جميع المقاعد</h2>
+    <p style="font-size:13px;color:var(--ink-s);margin-top:4px">وصلت البطولة إلى 16 لاعباً</p>
+  </div>
+
+  <!-- BOOKING FORM -->
+  <div id="formSection" class="gcard anim-fade" style="overflow:hidden;margin-bottom:20px">
+    <div class="tabs">
+      <button class="tab active" id="tabBook" onclick="switchTab('book')">حجز جديد</button>
+      <button class="tab" id="tabCheck" onclick="switchTab('check')">تحقق من حجزي</button>
+    </div>
+
+    <div id="bookPanel" style="padding:24px 20px">
+      <form id="bookForm" onsubmit="handleBook(event)">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--ink-s);margin-bottom:6px">الاسم الكامل</label>
+        <input class="field" type="text" id="bName" placeholder="اكتب اسمك هنا" maxlength="80" autocomplete="name" required>
+
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--ink-s);margin:16px 0 6px">رقم الجوال</label>
+        <div class="phone-wrap">
+          <div class="phone-prefix ltr">+971</div>
+          <input class="field ltr" type="tel" id="bPhone" placeholder="5XXXXXXXX" maxlength="15" inputmode="numeric" autocomplete="tel-national" required>
+        </div>
+
+        <div id="bookError" class="msg msg-err" style="display:none"></div>
+
+        <button type="submit" class="btn btn-p" id="bookBtn" style="margin-top:16px">احجز مكاني الآن</button>
+        <p class="tip">🔒 بياناتك محفوظة على جهازك فقط</p>
+      </form>
+    </div>
+
+    <div id="checkPanel" style="display:none;padding:24px 20px">
+      <form id="checkForm" onsubmit="handleCheck(event)">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--ink-s);margin-bottom:6px">رقم الجوال المسجل</label>
+        <div class="phone-wrap">
+          <div class="phone-prefix ltr">+971</div>
+          <input class="field ltr" type="tel" id="cPhone" placeholder="5XXXXXXXX" maxlength="15" inputmode="numeric" required>
+        </div>
+        <div id="checkError" class="msg msg-err" style="display:none"></div>
+        <button type="submit" class="btn btn-s" id="checkBtn" style="margin-top:16px">تحقق من حجزي</button>
+        <div id="checkResult" style="display:none"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div id="successScreen" class="gcard" style="display:none;overflow:hidden;padding:48px 24px;text-align:center"></div>
+
+  <!-- GROUPS -->
+  <section style="margin-top:24px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h2 style="display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900"><span>⚔️</span> المجموعات</h2>
+      <span id="totalLabel" class="ltr" style="font-size:11px;font-weight:700;color:var(--ink-m)">0 / 16 مسجل</span>
+    </div>
+    <div id="groupsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+  </section>
+
+  <!-- BRACKET -->
+  <section style="margin-top:28px">
+    <div class="gcard" style="padding:20px">
+      <h3 style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:900;margin-bottom:16px"><span>🏆</span> نظام البطولة</h3>
+      <p style="font-size:11px;font-weight:700;color:var(--ink-m);margin-bottom:10px;text-align:center">الجولة الأولى</p>
+      <div id="bracketGroups"></div>
+      <div style="text-align:center;margin:10px 0"><span style="font-size:10px;color:var(--ink-m)">▼ متأهل واحد من كل مجموعة ▼</span></div>
+      <div class="bracket-final">
+        <p style="font-size:12px;font-weight:700;color:var(--purple)">النهائي</p>
+        <p style="font-size:13px;font-weight:900;margin-top:4px">4 لاعبين يتنافسون على لقب <span class="neon">بطل لعبة الرمي</span></p>
+      </div>
+    </div>
+  </section>
+
+  <p style="text-align:center;font-size:10px;color:var(--ink-m);margin-top:32px">بطولة الشرقية للعبة روميكوب © 2025</p>
+</div>
+
+<script>
+/* ===========================================================
+    لعبة — نسخة localStorage (تعمل بدون سيرفر)
+    البيانات محفوظة في متصفحك فقط — لمدة يوم واحد
+   =========================================================== */
+
+var GROUPS = ['A','B','C','D'];
+var GROUP_NAMES = {A:'المجموعة A',B:'المجموعة B',C:'المجموعة C',D:'المجموعة D'};
+var STORAGE_KEY = 'la3bah_data';
+
+/* ── Data Layer (localStorage) ── */
+function loadData() {
+  var raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    try { return JSON.parse(raw); } catch(e) { /* fall through */ }
+  }
+  return { players: [], counters: {A:0,B:0,C:0,D:0} };
+}
+
+function saveData(d) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+}
+
+function getPhoneKey() {
+  return 'la3bah_booked_' + normalizePhone(document.getElementById('cPhone').value);
+}
+
+/* ── Phone normalization ── */
+function normalizePhone(raw) {
+  if (!raw) return null;
+  var d = raw.replace(/[^\d+]/g,'').replace(/(?!^)\+/g,'').replace(/^\+/,'');
+  if (d.startsWith('00971')) d = d.slice(5);
+  else if (d.startsWith('971')) d = d.slice(3);
+  if (d.startsWith('0')) d = d.slice(1);
+  if (!/^5\d{8}$/.test(d)) return null;
+  return '+971' + d;
+}
+
+/* ── Random group assignment (balanced) ── */
+function pickGroup(counters) {
+  // Find groups with fewer than 4 players
+  var available = GROUPS.filter(function(g) { return counters[g] < 4; });
+  if (available.length === 0) return null;
+  // Pick randomly from available
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+/* ── Render ── */
+function renderAll() {
+  var data = loadData();
+  var counters = data.counters;
+  var total = GROUPS.reduce(function(s,g) { return s + counters[g]; }, 0);
+
+  // Status chip
+  var chip = document.getElementById('statusChip');
+  chip.style.display = 'inline-flex';
+  if (total >= 16) {
+    chip.className = 'chip chip-red';
+    document.getElementById('statusText').textContent = 'اكتملت المقاعد';
+  } else {
+    chip.className = 'chip chip-green';
+    document.getElementById('statusText').textContent = 'التسجيل مفتوح';
+  }
+
+  // Banner
+  document.getElementById('bannerFull').style.display = total >= 16 ? 'block' : 'none';
+
+  // Form
+  document.getElementById('formSection').style.display = total >= 16 ? 'none' : 'block';
+
+  // Total label
+  document.getElementById('totalLabel').textContent = total + ' / 16 مسجل';
+
+  // Groups grid
+  var grid = document.getElementById('groupsGrid');
+  grid.innerHTML = GROUPS.map(function(g) {
+    var c = counters[g] || 0;
+    var full = c >= 4;
+    var pct = Math.min((c/4)*100, 100);
+    return '<div class="gcard '+(full?'b'+g+' glow-'+g:'')+'" style="padding:16px;transition:all .3s">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between">'
+      + '<span class="ltr g'+g+'" style="font-size:26px;font-weight:900">'+g+'</span>'
+      + (full ? '<span class="lock-badge">🔒 مكتملة</span>' : '')
+      + '</div>'
+      + '<div style="font-size:11px;font-weight:700;color:var(--ink-m);margin-top:4px">'+GROUP_NAMES[g]+'</div>'
+      + '<div style="font-size:14px;font-weight:900;color:var(--ink);margin-top:4px">'
+      + '<span class="ltr">'+c+'</span><span class="ltr" style="color:var(--ink-m)"> / 4</span> '
+      + '<span style="font-size:11px;font-weight:700;color:var(--ink-m)">لاعبين</span></div>'
+      + '<div class="pbar" style="margin-top:8px">'
+      + '<div class="pbar-fill f'+g+'" style="width:'+pct+'%"></div></div></div>';
+  }).join('');
+
+  // Bracket
+  document.getElementById('bracketGroups').innerHTML = GROUPS.map(function(g) {
+    return '<div class="bracket-group">'
+      + '<span style="font-size:13px;font-weight:700">'+GROUP_NAMES[g]+'</span>'
+      + '<span class="ltr g'+g+'" style="font-size:18px;font-weight:900">'+g+'</span></div>';
+  }).join('');
+
+  // Clear form if full
+  if (total >= 16) {
+    document.getElementById('bName').value = '';
+    document.getElementById('bPhone').value = '';
+  }
+}
+
+/* ── Tabs ── */
+function switchTab(mode) {
+  document.getElementById('tabBook').className = 'tab' + (mode==='book'?' active':'');
+  document.getElementById('tabCheck').className = 'tab' + (mode==='check'?' active':'');
+  document.getElementById('bookPanel').style.display = mode==='book' ? 'block' : 'none';
+  document.getElementById('checkPanel').style.display = mode==='check' ? 'block' : 'none';
+}
+
+/* ── Toast ── */
+function toast(msg, ms) {
+  ms = ms || 2500;
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function() { t.classList.add('out'); setTimeout(function(){ t.remove(); }, 400); }, ms);
+}
+
+/* ── Book ── */
+function handleBook(e) {
+  e.preventDefault();
+  var errEl = document.getElementById('bookError');
+  var name = (document.getElementById('bName').value||'').trim();
+  var phone = document.getElementById('bPhone').value;
+
+  errEl.style.display = 'none';
+
+  if (name.length < 2) { errEl.textContent = 'الرجاء إدخال الاسم الكامل'; errEl.style.display='block'; return; }
+  if (!phone) { errEl.textContent = 'رقم الجوال مطلوب'; errEl.style.display='block'; return; }
+
+  var normPhone = normalizePhone(phone);
+  if (!normPhone) { errEl.textContent = 'رقم الجوال غير صحيح. مثال: 5XXXXXXXX'; errEl.style.display='block'; return; }
+
+  var data = loadData();
+
+  // Check phone exists
+  var exists = data.players.some(function(p) { return p.phone === normPhone; });
+  if (exists) { errEl.textContent = 'هذا الرقم مسجل مسبقاً.'; errEl.style.display='block'; return; }
+
+  // Check full
+  var total = GROUPS.reduce(function(s,g) { return s + data.counters[g]; }, 0);
+  if (total >= 16) { errEl.textContent = 'اكتملت جميع المقاعد'; errEl.style.display='block'; return; }
+
+  // Pick group
+  var group = pickGroup(data.counters);
+  if (!group) { errEl.textContent = 'لا توجد مجموعة متاحة'; errEl.style.display='block'; return; }
+
+  // Player number = next in group
+  var playerNumber = data.counters[group] + 1;
+
+  // Save
+  var player = { name: name, phone: normPhone, group: group, number: playerNumber, time: new Date().toISOString() };
+  data.players.push(player);
+  data.counters[group]++;
+  saveData(data);
+
+  // Booked marker
+  localStorage.setItem('la3bah_booked_' + normPhone, JSON.stringify(player));
+
+  // Show success
+  showSuccess(player);
+}
+
+/* ── Check ── */
+function handleCheck(e) {
+  e.preventDefault();
+  var errEl = document.getElementById('checkError');
+  var resEl = document.getElementById('checkResult');
+  var phone = document.getElementById('cPhone').value;
+
+  errEl.style.display = 'none';
+  resEl.style.display = 'none';
+
+  var normPhone = normalizePhone(phone);
+  if (!normPhone) { errEl.textContent = 'رقم الجوال غير صحيح'; errEl.style.display='block'; return; }
+
+  var raw = localStorage.getItem('la3bah_booked_' + normPhone);
+  if (!raw) {
+    errEl.textContent = 'لا يوجد حجز مسجل بهذا الرقم';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  var player = JSON.parse(raw);
+  var colorClass = 'g' + player.group;
+
+  resEl.innerHTML = '<div class="gcard anim-pop" style="margin-top:14px;padding:20px;text-align:center">'
+    + '<p style="font-size:13px;color:var(--ink-s)">أهلاً بك يا</p>'
+    + '<p style="font-size:17px;font-weight:900;margin-top:2px">'+player.name+'</p>'
+    + '<div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-top:16px">'
+    + '<div><div style="font-size:10px;font-weight:700;color:var(--ink-m)">المجموعة</div>'
+    + '<div class="ltr '+colorClass+'" style="font-size:32px;font-weight:900;margin-top:2px">'+player.group+'</div></div>'
+    + '<div style="width:1px;height:36px;background:var(--border)"></div>'
+    + '<div><div style="font-size:10px;font-weight:700;color:var(--ink-m)">رقم اللاعب</div>'
+    + '<div class="ltr" style="font-size:32px;font-weight:900;margin-top:2px">#'+String(player.number).padStart(2,'0')+'</div></div>'
+    + '</div></div>';
+  resEl.style.display = 'block';
+}
+
+/* ── Success ── */
+function showSuccess(player) {
+  var form = document.getElementById('formSection');
+  var scr = document.getElementById('successScreen');
+
+  form.style.display = 'none';
+  scr.style.display = 'block';
+
+  // Phase 1: Rolling dice (1.8s)
+  scr.className = 'gcard anim-fade';
+  scr.innerHTML = '<div class="anim-dice" style="font-size:56px">🎲</div>'
+    + '<p style="font-size:18px;font-weight:900;margin-top:16px">جاري توزيعك عشوائياً...</p>'
+    + '<div class="pbar" style="width:160px;margin:20px auto 0"><div class="pbar-fill fA" style="width:50%"></div></div>';
+
+  setTimeout(function() {
+    var g = player.group;
+    var num = String(player.number).padStart(2,'0');
+    var colorClass = 'g'+g;
+    var borderClass = 'b'+g;
+    var glowClass = 'glow-'+g;
+
+    scr.innerHTML = '<div class="anim-pop" style="font-size:44px">🎉</div>'
+      + '<h2 style="font-size:22px;font-weight:900;margin-top:10px">تم حجز مكانك بنجاح!</h2>'
+      + '<p style="font-size:14px;color:var(--ink-s);margin-top:4px">أهلاً بك يا <strong style="color:var(--ink)">'+player.name+'</strong></p>'
+      + '<p style="font-size:11px;font-weight:700;color:var(--ink-m);margin-top:28px">تم توزيعك عشوائياً على</p>'
+      + '<div class="anim-pop '+borderClass+' '+glowClass+'" style="width:120px;height:120px;margin:12px auto;border-radius:28px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;background:rgba(17,29,50,.7)">'
+      + '<span class="ltr '+colorClass+'" style="font-size:64px;font-weight:900">'+g+'</span></div>'
+      + '<p class="'+colorClass+'" style="font-size:16px;font-weight:900">'+GROUP_NAMES[g]+'</p>'
+      + '<div style="display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:10px 20px;border-radius:20px;border:1px solid var(--border);background:rgba(24,38,64,.5)">'
+      + '<span style="font-size:11px;font-weight:700;color:var(--ink-m)">رقم اللاعب</span>'
+      + '<span class="ltr" style="font-size:18px;font-weight:900">#'+num+'</span></div>'
+      + '<div style="margin-top:24px;border-radius:12px;border:1px solid var(--border);background:rgba(17,29,50,.4);padding:14px 16px">'
+      + '<p style="font-size:12px;color:var(--ink-s);line-height:1.8">احتفظ بهذه المعلومات، وسيتم التواصل معك بخصوص موعد المنافسة.</p></div>'
+      + '<button class="btn btn-s" style="margin-top:16px" onclick="resetForm()">حجز لاعب آخر</button>';
+    }, 1800);
+}
+
+function resetForm() {
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('bookBtn').disabled = false;
+  document.getElementById('bookBtn').textContent = 'احجز مكاني الآن';
+  document.getElementById('bName').value = '';
+  document.getElementById('bPhone').value = '';
+  document.getElementById('bookError').style.display = 'none';
+}
+
+/* ── START ── */
+renderAll();
+</script>
+</body>
+</html>
