@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لوحة التحكم — بطولة الشرقية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b1426;--bg2:#111d32;--bg3:#182640;--border:#1e3050;
+  --ink:#e8ecf1;--ink-s:#8899b0;--ink-m:#5a6f8a;
+  --red:#ff2d55;--blue:#3b82f6;--blue2:#22d3ee;--purple:#a855f7;--green:#22c55e}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-align:right;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:900px;margin:0 auto;padding:24px 20px 80px}
+.gcard{background:rgba(17,29,50,.75);border:1px solid var(--border);border-radius:14px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 24px rgba(0,0,0,.35)}
+h1{font-size:22px;font-weight:900;background:linear-gradient(100deg,var(--red),var(--purple) 50%,var(--blue));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:20px}
+.stat-card{padding:18px;text-align:center}
+.stat-num{font-size:30px;font-weight:900;margin-top:2px;direction:ltr}
+.stat-lbl{font-size:11px;font-weight:700;color:var(--ink-m)}
+table{width:100%;border-collapse:collapse;margin-top:16px}
+th,td{padding:12px 10px;text-align:right;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+th{color:var(--ink-m);font-weight:700;font-size:11px;text-transform:uppercase;position:sticky;top:0;background:var(--bg2)}
+thead th{background:#0f1c35}
+tr:hover td{background:rgba(24,38,64,.4)}
+.search{width:100%;padding:12px 14px;border-radius:12px;font-family:inherit;font-size:14px;
+  background:rgba(17,29,50,.8);border:1px solid var(--border);color:var(--ink);outline:none}
+.search:focus{border-color:rgba(59,130,246,.5)}
+.badge{display:inline-block;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;
+  border:1px solid;font-family:inherit}
+.bA{color:#ff2d55;border-color:rgba(255,45,85,.4);background:rgba(255,45,85,.1)}
+.bB{color:#3b82f6;border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1)}
+.bC{color:#a855f7;border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.1)}
+.bD{color:#22d3ee;border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.1)}
+.del-btn{padding:6px 14px;border-radius:8px;background:rgba(255,45,85,.12);color:var(--red);
+  font-size:12px;font-weight:800;border:1px solid rgba(255,45,85,.3)}
+.empty{text-align:center;padding:40px;color:var(--ink-m)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px}
+.btn{padding:11px 18px;border-radius:10px;font-size:13px;font-weight:800}
+.btn-green{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.4)}
+.btn-red{background:rgba(255,45,85,.12);color:var(--red);border:1px solid rgba(255,45,85,.3)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;background:var(--bg2);
+  border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:700;
+  color:var(--ink);box-shadow:0 4px 24px rgba(0,0,0,.35);transition:opacity .3s}
+.header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.status-chip{color:var(--green);font-size:13px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1>🛠️ لوحة التحكم — بطولة الشرقية</h1>
+      <p style="font-size:12px;color:var(--ink-s);margin-top:6px" id="statusText">جارِ التحميل...</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="index.html" style="text-decoration:none"><button class="btn" style="background:var(--bg3);color:var(--ink-s);border:1px solid var(--border)">الصفحة العامة</button></a>
+    </div>
+  </div>
+
+  <div id="warn" style="display:none;margin-top:16px;border-radius:12px;border:1px solid rgba(255,45,85,.3);
+    background:rgba(255,45,85,.08);color:var(--red);padding:16px;font-size:13px;font-weight:700"></div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input class="search" type="text" id="search" placeholder="🔍 ابحث بالاسم أو رقم الجوال..." style="flex:1;min-width:200px">
+    <button class="btn btn-green" onclick="reopenReg()" id="reopenBtn">إعادة فتح التسجيل</button>
+    <button class="btn btn-red" onclick="resetAll()">تفريغ كل الحجوزات</button>
+  </div>
+
+  <div class="gcard" style="margin-top:16px;overflow:auto">
+    <table id="table">
+      <thead><tr><th>#</th><th>الاسم</th><th>الجوال</th><th>المجموعة</th><th>رقم اللاعب</th><th>الوقت</th><th></th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">لا يوجد لاعبون مسجلون بعد</div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+/* ===========================================================
+   لوحة التحكم — بطولة الشرقية (روميكوب)
+   البيانات من config.js
+   =========================================================== */
+function toast(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); },400); }, 2200);
+}
+
+async function initForAdmin() {
+  var url = typeof SB_URL !== 'undefined' ? SB_URL : null;
+  var key = typeof SB_KEY !== 'undefined' ? SB_KEY : null;
+
+  if (!url || !key || String(url).indexOf('YOUR_')===0 || String(key).indexOf('YOUR_')===0) {
+    document.getElementById('warn').style.display='block';
+    document.getElementById('warn').textContent='⚠️ لم يتم تعبئة بيانات Supabase في config.js. افتح ملف config.js وأضف SB_URL و SB_KEY.';
+    return;
+  }
+
+  window.ADMIN_SB = window.supabase.createClient(url, key);
+  window.ADMIN_TOURNAMENT = null;
+
+  var { data } = await ADMIN_SB.from('tournaments').select('*').order('created_at').limit(1).maybeSingle();
+  window.ADMIN_TOURNAMENT = data;
+
+  renderStatus();
+  await loadPlayers();
+  subscribeCounters();
+}
+
+function renderStatus() {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!st) return;
+  var labels = {REGISTRATION_OPEN:'التسجيل مفتوح',REGISTRATION_FULL:'اكتملت المقاعد',GROUPS_ACTIVE:'بدأت المنافسات',FINAL_READY:'النهائي جاهز',FINAL_ACTIVE:'النهائي جارٍ',COMPLETED:'انتهت البطولة'};
+  document.getElementById('statusText').textContent = 'حالة البطولة: ' + (labels[st.status]||st.status);
+}
+
+async function loadPlayers() {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!st) return;
+
+  var { data, error } = await ADMIN_SB.rpc('get_all_players', { p_tournament_id: st.id });
+
+  if (error) {
+    // fallback: try direct read
+    var { data: d2 } = await ADMIN_SB.from('players').select('*').eq('tournament_id', st.id);
+    data = d2;
+  }
+
+  var players = data || [];
+  window.PLAYERS = players;
+  renderTable(players);
+  renderStats(players);
+}
+
+function renderStats(players) {
+  var total = players.length;
+  var counts = {A:0,B:0,C:0,D:0};
+  players.forEach(function(p){ counts[p.group_name]++; });
+
+  var html =
+    '<div class="stat-card gcard"><div class="stat-lbl">إجمالي المسجلين</div><div class="stat-num" style="color:#fff">'+total+'</div></div>'
+    + '<div class="stat-card gcard"><div class="stat-lbl">المجموعة A</div><div class="stat-num" style="color:#ff2d55">'+ (counts.A||0) +'/4</div></div>'
+    + '<div class="stat-card gcard"><div class="stat-lbl">المجموعة B</div><div class="stat-num" style="color:#3b82f6">'+ (counts.B||0) +'/4</div></div>'
+    + '<div class="stat-card gcard"><div class="stat-lbl">المجموعة C</div><div class="stat-num" style="color:#a855f7">'+ (counts.C||0) +'/4</div></div>'
+    + '<div class="stat-card gcard"><div class="stat-lbl">المجموعة D</div><div class="stat-num" style="color:#22d3ee">'+ (counts.D||0) +'/4</div></div>';
+  document.getElementById('stats').innerHTML = html;
+}
+
+function renderTable(players) {
+  var tbody = document.getElementById('tbody');
+  var empty = document.getElementById('empty');
+
+  if (!players || players.length === 0) { tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  tbody.innerHTML = players.map(function(p, i) {
+    return '<tr>'
+      + '<td>'+ (i+1) +'</td>'
+      + '<td style="font-weight:800">'+ p.full_name +'</td>'
+      + '<td style="direction:ltr;text-align:right">'+ p.phone +'</td>'
+      + '<td><span class="badge b'+ p.group_name +'">'+ ('A B C D'.indexOf(p.group_name)>=0?p.group_name:'') +'</span></td>'
+      + '<td class="ltr" style="text-align:right">#'+ String(p.player_number).padStart(2,'0') +'</td>'
+      + '<td>'+ new Date(p.created_at).toLocaleTimeString('ar', {hour:'2-digit',minute:'2-digit'}) +'</td>'
+      + '<td><button class="del-btn" onclick="deletePlayer(\''+ p.id +'\')">حذف</button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+var searchTimer;
+document.getElementById('search').addEventListener('input', function() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(function() {
+    var q = this.value.trim().toLowerCase();
+    if (!q) { renderTable(window.PLAYERS); return; }
+    var filtered = (window.PLAYERS||[]).filter(function(p){
+      return p.full_name.toLowerCase().indexOf(q)>=0 || p.phone.indexOf(q)>=0;
+    });
+    renderTable(filtered);
+  }.bind(this), 200);
+});
+
+async function deletePlayer(id) {
+  var st = window.ADMIN_TOURNAMENT;
+  var { data } = await ADMIN_SB.rpc('delete_player', { p_player_id: id, p_tournament_id: st.id });
+  toast('تم حذف اللاعب ✅');
+  await loadPlayers();
+}
+
+async function reopenReg() {
+  var st = window.ADMIN_TOURNAMENT;
+  var { data } = await ADMIN_SB.rpc('reopen_registration', { p_tournament_id: st.id });
+  toast('تم فتح التسجيل ✅');
+  renderStatus();
+}
+
+async function resetAll() {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!confirm('⚠️ سيتم حذف جميع الحجوزات نهائياً. متأكد؟')) return;
+  var { data, error } = await ADMIN_SB.from('players').delete().eq('tournament_id', st.id);
+  await ADMIN_SB.from('groups').update({player_count:0}).eq('tournament_id', st.id);
+  await ADMIN_SB.rpc('reopen_registration', { p_tournament_id: st.id });
+  toast('تم التفريغ ✅');
+  await loadPlayers();
+  renderStatus();
+}
+
+function subscribeCounters() {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!st) return;
+  ADMIN_SB.channel('admin-rt')
+    .on('postgres_changes', {event:'*', schema:'public', table:'players', filter:'tournament_id=eq.'+st.id}, function(){ loadPlayers(); })
+    .subscribe();
+}
+
+document.addEventListener('DOMContentLoaded', initForAdmin);
+</script>
+</body>
+</html>
