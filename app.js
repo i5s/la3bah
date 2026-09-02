@@ -341,21 +341,82 @@ async function init() {
 function hideLoader() {
   var l = document.getElementById('loader');
   if (!l) return;
-  l.style.transition = 'opacity .6s ease';
+
+  // تأكد أن الثواني الثلاث انقضت قبل الإخفاء، وإلا انتظر
+  var elapsed = Date.now() - window._loaderStart;
+  if (window._loaderStart && elapsed < 3000) {
+    setTimeout(hideLoader, 3000 - elapsed);
+    return;
+  }
+
+  l.style.transition = 'opacity .5s ease';
   l.style.opacity = '0';
-  setTimeout(function(){ l.style.display = 'none'; }, 650);
+  setTimeout(function(){ l.style.display = 'none'; }, 550);
 }
 
-function runLoaderCounter() {
+/* ── Loading intro: 3 stages in 3 seconds (game intro) ── */
+var loaderTimer = null;
+var loaderPctTimer = null;
+
+function runLoaderSequence() {
   var pct = 0;
-  var iv = setInterval(function() {
+  window._loaderStart = Date.now();
+  document.getElementById('loadPct').textContent = '0%';
+
+  // Stage sequence timing: channel (0-0.8s) → X (0.8-1.6s) → game (1.6-3s)
+  var stages = ['stageChannel','stageX','stageGame'];
+  var ui = [
+    {s:'stageChannel', m:'قناة الشرقية', at:0},
+    {s:'stageX', m:'مع البطولة', at:800},
+    {s:'stageGame', m:'جارِ تحميل البطولة...', at:1600}
+  ];
+
+  // hide X and game initially
+  document.getElementById('stageX').style.display = 'none';
+  document.getElementById('stageGame').style.display = 'none';
+  document.getElementById('stageChannel').style.display = 'flex';
+
+  ui.forEach(function(u) {
+    setTimeout(function() {
+      showStage(u.s, u.m);
+    }, u.at);
+  });
+
+  // progress counter ~ 3 seconds
+  var start = Date.now();
+  loaderPctTimer = setInterval(function() {
     var elPct = document.getElementById('loadPct');
-    if (!elPct) { clearInterval(iv); return; }
-    pct = Math.min(pct + (Math.random()*12 + 6), 99);
-    elPct.textContent = Math.floor(pct) + '%';
-    if (pct >= 99) { clearInterval(iv); setTimeout(function(){ if (elPct) elPct.textContent = '100%'; }, 300); }
-  }, 240);
+    if (!elPct) return;
+    var t = (Date.now() - start) / 3000;
+    pct = Math.min(Math.floor(t * 100), 99);
+    elPct.textContent = pct + '%';
+  }, 60);
+
+  // reveal after 3s
+  loaderTimer = setTimeout(function() {
+    if (loaderPctTimer) clearInterval(loaderPctTimer);
+    document.getElementById('loadPct').textContent = '100%';
+    hideLoader();
+  }, 3000);
 }
 
-document.addEventListener('DOMContentLoaded', function(){ runLoaderCounter(); });
+function showStage(id, msg) {
+  var stages = ['stageChannel','stageX','stageGame'];
+  stages.forEach(function(s) {
+    var node = document.getElementById(s);
+    if (!node) return;
+    if (s === id) {
+      node.style.display = 'flex';
+      node.classList.remove('out');
+      node.classList.add('act');
+    } else {
+      node.classList.remove('act');
+      node.classList.add('out');
+    }
+  });
+  var m = document.getElementById('loadMsg');
+  if (m) m.textContent = msg;
+}
+
+document.addEventListener('DOMContentLoaded', function(){ runLoaderSequence(); });
 document.addEventListener('DOMContentLoaded', init);
