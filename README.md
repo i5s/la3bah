@@ -11,16 +11,13 @@
 - `app.js` — منطق الاتصال بقاعدة البيانات + واجهة المتجذّر
 - `rummikub-logo.png` — اللوقو
 
-## الرفع على Render (Static Site)
-1. ارفع هذا المجلد إلى مستودع GitHub
-2. في Render → New → **Static Site**
-3. اربط المستودع
-4. Build Command: (فارغ، اتركه)
-5. Publish Directory: `.`
-6. Deploy
+## الرفع على الانترنت (GitHub Pages — مفعّل)
+الموقع منشور بالفعل على GitHub Pages:
 
-- الصفحة العامة: `https://xxx.onrender.com/`
-- لوحة التحكم: `https://xxx.onrender.com/admin.html`
+- الصفحة العامة: `https://i5s.github.io/la3bah/`
+- لوحة التحكم: `https://i5s.github.io/la3bah/admin.html`
+
+أي تعديل على ملفات المجلد ثم `git push` يُحدّث الموقع تلقائياً خلال دقيقة.
 
 ## ملاحظات أمان (مهم)
 - هذه الأداة مخصصة للاستخدام **المؤقت** خلال يوم البطولة. بعد انتهاء الحدث احذف البيانات.
