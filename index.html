@@ -134,11 +134,7 @@ body{scrollbar-width:none}
     linear-gradient(transparent 50%,rgba(0,255,255,.06) 50%),
     linear-gradient(90deg,transparent 50%,rgba(255,0,200,.05) 50%);
   background-size:48px 48px;animation:scan 1.6s linear infinite}
-#loader::after{content:'';position:absolute;width:100%;height:2px;top:45%;
-  background:linear-gradient(90deg,transparent,#22d3ee,#ff2d55,transparent);
-  filter:blur(1px);animation:sweep 1.8s ease-in-out infinite}
 @keyframes scan{from{background-position:0 0}to{background-position:0 48px}}
-@keyframes sweep{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
 .loader-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .loader-stage.act{animation:stageIn .5s cubic-bezier(.2,.9,.3,1.2) both}
 .loader-stage.out{animation:stageOut .4s ease-in both}
@@ -157,12 +153,14 @@ body{scrollbar-width:none}
   background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
   animation:glitch 2.4s linear infinite}
 @keyframes glitch{to{background-position:220% center}}
-.loader-bar{width:240px;max-width:70vw;height:5px;margin:28px auto 0;border-radius:5px;
-  background:rgba(255,255,255,.08);overflow:hidden;position:relative;box-shadow:0 0 16px rgba(34,211,238,.45)}
-.loader-bar span{position:absolute;inset:0;width:38%;border-radius:5px;
-  background:linear-gradient(90deg,#22d3ee,#a855f7,#ff2d55);animation:load 1.1s ease-in-out infinite;
-  box-shadow:0 0 18px rgba(34,211,238,.85)}
-@keyframes load{0%{left:-38%}100%{left:100%}}
+.loader-bar{width:260px;max-width:72vw;height:8px;margin:10px auto 0;border-radius:6px;
+  background:rgba(255,255,255,.09);overflow:hidden;position:relative;
+  box-shadow:inset 0 0 8px rgba(0,0,0,.6),0 0 16px rgba(34,211,238,.35)}
+.loader-bar b{position:absolute;inset:0;width:0%;border-radius:6px;
+  background:linear-gradient(90deg,#22d3ee,#a855f7,#ff2d55);
+  box-shadow:0 0 18px rgba(34,211,238,.85);transition:width .12s linear}
+.loader-msg{font-size:13px;font-weight:800;color:#22d3ee;margin-top:12px;letter-spacing:1px;
+  text-shadow:0 0 12px #22d3ee}
 .loader-sub{font-size:11px;font-weight:700;color:#22d3ee;opacity:.85;letter-spacing:6px;text-transform:uppercase;
   animation:blink 1s step-end infinite;text-shadow:0 0 12px #22d3ee}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.12}}
@@ -190,7 +188,8 @@ body{scrollbar-width:none}
   <div class="loader-stage" id="stageGame" style="display:none">
     <img src="rummikub-logo.png" alt="Rummikub" class="loader-logo">
     <div class="loader-title">بطولة الشرقية</div>
-    <div class="loader-bar"><span></span></div>
+    <div class="loader-msg">جارِ تحميل البطولة...</div>
+    <div class="loader-bar"><b id="loaderBar"></b></div>
   </div>
 
   <div class="loader-sub" style="position:absolute;bottom:16%;left:50%;transform:translateX(-50%)" id="loadMsg">جارِ التهيئة...</div>

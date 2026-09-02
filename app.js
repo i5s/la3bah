@@ -382,20 +382,23 @@ function runLoaderSequence() {
     }, u.at);
   });
 
-  // progress counter ~ 3 seconds
+  // progress bar + counter over ~3 seconds (0 → 100)
   var start = Date.now();
   loaderPctTimer = setInterval(function() {
     var elPct = document.getElementById('loadPct');
-    if (!elPct) return;
+    var elBar = document.getElementById('loaderBar');
     var t = (Date.now() - start) / 3000;
-    pct = Math.min(Math.floor(t * 100), 99);
-    elPct.textContent = pct + '%';
-  }, 60);
+    pct = Math.min(Math.round(t * 100), 99);
+    if (elPct) elPct.textContent = pct + '%';
+    if (elBar) elBar.style.width = pct + '%';
+  }, 40);
 
   // reveal after 3s
   loaderTimer = setTimeout(function() {
     if (loaderPctTimer) clearInterval(loaderPctTimer);
     document.getElementById('loadPct').textContent = '100%';
+    var elBar = document.getElementById('loaderBar');
+    if (elBar) elBar.style.width = '100%';
     hideLoader();
   }, 3000);
 }
