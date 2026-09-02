@@ -112,6 +112,50 @@ function gcol(g) {
   return ({A:'--red',B:'--blue',C:'--purple',D:'--cyan'})[g] || '--cyan';
 }
 
+/* ── المتأهلون ── */
+var finalists = [];
+
+async function loadFinalists() {
+  if (!tournament) return;
+  var { data, error } = await sb.rpc('get_finalists', { p_tournament_id: tournament.id });
+  if (error) { finalists = []; } else { finalists = data || []; }
+  renderFinalists();
+}
+
+function renderFinalists() {
+  var sec = el('finalistsSection');
+  if (!sec) return;
+  var inner = el('finalistsInner');
+
+  if (!finalists || finalists.length === 0) {
+    sec.style.display = 'none';
+    return;
+  }
+  sec.style.display = 'block';
+
+  // ترتيب حسب المجموعة: A,B,C,D
+  var order = {A:0,B:1,C:2,D:3};
+  var sorted = finalists.slice().sort(function(a,b){
+    return (order[a.group_name]||9) - (order[b.group_name]||9);
+  });
+
+  var box = '<div id="finalistsInner" style="display:grid;gap:8px;margin-top:14px">';
+  sorted.forEach(function(f, idx) {
+    var g = f.group_name;
+    var colorClass = 'g'+g;
+    var borderClass = 'b'+g;
+    var num = String(f.player_number||idx+1).padStart(2,'0');
+    box += '<div class="bracket-group '+borderClass+'" style="padding:12px 14px"><div style="display:flex;align-items:center;gap:10px;min-width:0">'
+      + '<span class="ltr '+colorClass+'" style="font-size:16px;font-weight:900;flex-shrink:0">'+ (g||'') +'</span>'
+      + '<div style="min-width:0;flex:1"><div style="font-size:14px;font-weight:800;color:var(--ink)">'+ (f.full_name||'') +'</div>'
+      + '<div style="font-size:10px;font-weight:700;color:var(--ink-m)">#'+num+'</div></div>'
+      + '<span class="chip chip-green" style="flex-shrink:0">🏆 متأهل</span></div></div>';
+  });
+  box += '</div>';
+
+  inner.innerHTML = box;
+}
+
 function renderBracket() {
   el('bracketGroups').innerHTML = GROUPS.map(function(g) {
     return '<div class="bracket-group">'
@@ -307,6 +351,9 @@ function subscribe() {
       var r = p.new;
       if (r && r.status) { tournament.status = r.status; renderAll(); }
     })
+    .on('postgres_changes', {event:'*', schema:'public', table:'finalists', filter:'tournament_id=eq.'+tournament.id}, function() {
+      loadFinalists();
+    })
     .subscribe();
 }
 
@@ -336,6 +383,7 @@ async function init() {
     }
 
     await loadCounters();
+    await loadFinalists();
     renderAll();
     subscribe();
   } catch(e) {
