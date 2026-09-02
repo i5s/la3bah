@@ -75,7 +75,11 @@ function renderAll() {
   var canBook = (st === 'REGISTRATION_OPEN' || st === 'REGISTRATION_FULL') && total < 16;
   el('formSection').style.display = canBook ? 'block' : 'none';
 
-  el('totalLabel').textContent = total + ' / 16 مسجل';
+  if (total >= 16) {
+    el('totalLabel').innerHTML = '<span style="color:var(--red);font-weight:900">العدد مكتمل 🔴 16 / 16</span>';
+  } else {
+    el('totalLabel').innerHTML = '<span class="ltr" style="color:var(--ink-m)">'+total+' / 16 مسجل</span>';
+  }
 
   renderGroups();
   renderBracket();
@@ -303,6 +307,7 @@ function subscribe() {
 /* ── Init ── */
 async function init() {
   if (SB_URL.indexOf('YOUR_') === 0 || SB_KEY.indexOf('YOUR_') === 0) {
+    hideLoader();
     el('app').innerHTML += '<div class="gcard" style="margin-top:40px;padding:40px 24px;text-align:center">'
       + '<div style="font-size:40px">⚠️</div>'
       + '<h2 style="font-size:16px;font-weight:900;margin-top:10px">تهيئة Supabase ناقصة</h2>'
@@ -312,19 +317,45 @@ async function init() {
 
   try {
     sb = window.supabase.createClient(SB_URL, SB_KEY);
-  } catch(e) { console.error(e); return; }
+  } catch(e) { console.error(e); hideLoader(); return; }
 
-  await loadTournament();
-  if (!tournament) {
-    el('app').innerHTML += '<div class="gcard" style="margin-top:40px;padding:40px 24px;text-align:center">'
-      + '<div style="font-size:40px">⚠️</div>'
-      + '<h2 style="font-size:16px;font-weight:900;margin-top:10px">البطولة غير مهيأة</h2></div>';
-    return;
+  try {
+    await loadTournament();
+    if (!tournament) {
+      hideLoader();
+      el('app').innerHTML += '<div class="gcard" style="margin-top:40px;padding:40px 24px;text-align:center">'
+        + '<div style="font-size:40px">⚠️</div>'
+        + '<h2 style="font-size:16px;font-weight:900;margin-top:10px">البطولة غير مهيأة</h2></div>';
+      return;
+    }
+
+    await loadCounters();
+    renderAll();
+    subscribe();
+  } catch(e) {
+    console.error(e);
   }
-
-  await loadCounters();
-  renderAll();
-  subscribe();
+  hideLoader();
 }
 
+function hideLoader() {
+  var l = document.getElementById('loader');
+  if (!l) return;
+  l.style.transition = 'opacity .6s ease';
+  l.style.opacity = '0';
+  setTimeout(function(){ l.style.display = 'none'; }, 650);
+}
+
+function runLoaderCounter() {
+  var pct = 0;
+  var iv = setInterval(function() {
+    var elPct = document.getElementById('loadPct');
+    if (!elPct) { clearInterval(iv); return; }
+    pct = Math.min(pct + (Math.random()*12 + 6), 99);
+    elPct.textContent = Math.floor(pct) + '%';
+    if (pct >= 99) { clearInterval(iv); setTimeout(function(){ if (elPct) elPct.textContent = '100%'; }, 300); }
+  }, 240);
+}
+
+document.addEventListener('DOMContentLoaded', function(){ runLoaderCounter(); });
 document.addEventListener('DOMContentLoaded', init);

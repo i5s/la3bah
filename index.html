@@ -126,9 +126,55 @@ body{scrollbar-width:none}
 .toast.out{opacity:0;transform:translateX(-50%) translateY(-10px);transition:all .3s}
 
 @media(min-width:640px){.wrap{max-width:520px}}
+/* ── Loading screen (cyberpunk) ── */
+#loader{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
+  background:#05060f;overflow:hidden}
+#loader::before{content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(transparent 50%,rgba(0,255,255,.05) 50%),
+    linear-gradient(90deg,transparent 50%,rgba(255,0,200,.05) 50%);
+  background-size:60px 60px;animation:scan 2.2s linear infinite}
+#loader::after{content:'';position:absolute;width:100%;height:2px;top:45%;
+  background:linear-gradient(90deg,transparent,#22d3ee,#ff2d55,transparent);
+  filter:blur(1px);animation:sweep 2s ease-in-out infinite}
+@keyframes scan{from{background-position:0 0}to{background-position:0 60px}}
+@keyframes sweep{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.loader-content{position:relative;text-align:center;padding:20px}
+.loader-logo{width:220px;max-width:80vw;margin:0 auto;filter:drop-shadow(0 0 18px rgba(34,211,238,.8))
+  drop-shadow(0 0 40px rgba(255,45,85,.5));animation:float 3s ease-in-out infinite}
+.loader-title{font-size:22px;font-weight:900;margin-top:22px;letter-spacing:3px;
+  background:linear-gradient(90deg,#22d3ee,#3b82f6,#a855f7,#ff2d55,#22d3ee);
+  background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:glitch 4s linear infinite}
+@keyframes glitch{to{background-position:200% center}}
+.loader-sub{font-size:12px;font-weight:700;color:#22d3ee;opacity:.8;margin-top:6px;
+  letter-spacing:7px;text-transform:uppercase;animation:blink 1.2s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.loader-bar{width:230px;max-width:70vw;height:4px;margin:26px auto 0;border-radius:4px;
+  background:rgba(255,255,255,.08);overflow:hidden;position:relative;
+  box-shadow:0 0 12px rgba(34,211,238,.4)}
+.loader-bar span{position:absolute;inset:0;width:40%;border-radius:4px;
+  background:linear-gradient(90deg,#22d3ee,#ff2d55);animation:load 1.2s ease-in-out infinite;
+  box-shadow:0 0 14px rgba(34,211,238,.8)}
+@keyframes load{0%{left:-40%}100%{left:100%}}
+.loader-deco{position:absolute;font-size:10px;font-weight:700;color:#22d3ee;opacity:.35;letter-spacing:2px}
+@keyframes flick{0%,100%{opacity:.35}50%{opacity:.9}}
 </style>
 </head>
 <body>
+
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <span class="loader-deco" style="top:14%;left:8%">// NEURAL LINK</span>
+  <span class="loader-deco" style="top:78%;right:8%">▍DATA INJECTION</span>
+  <span class="loader-deco" style="bottom:12%;left:12%" id="loadPct">0%</span>
+  <div class="loader-content">
+    <img src="rummikub-logo.png" alt="Rummikub" class="loader-logo">
+    <div class="loader-title">بطولة الشرقية</div>
+    <div class="loader-sub">LOADING • روميكوب</div>
+    <div class="loader-bar"><span></span></div>
+  </div>
+</div>
 
 <div class="bg-grid"></div>
 
@@ -136,7 +182,7 @@ body{scrollbar-width:none}
 
   <!-- HEADER -->
   <header style="text-align:center;padding:20px 0 4px">
-    <img src="rummikub-logo.png" alt="Rummikub" style="height:48px;width:auto;margin-bottom:8px">
+    <img src="rummikub-logo.png" alt="Rummikub" class="anim-float" style="height:48px;width:auto;margin-bottom:8px">
     <h1 class="neon" style="font-size:34px;font-weight:900;line-height:1.15">بطولة الشرقية</h1>
     <span id="statusChip" class="chip chip-green" style="display:none;margin:8px auto 0">
       <span style="width:6px;height:6px;border-radius:50%;background:currentColor" class="anim-pulse"></span>
