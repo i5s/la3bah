@@ -91,19 +91,25 @@ function renderGroups() {
     var c = counters[g] || 0;
     var full = c >= 4;
     var pct = Math.min((c/4)*100, 100);
-    return '<div class="gcard '+(full?'b'+g+' glow-'+g:'')+'" style="padding:16px;transition:all .3s">'
+    return '<div class="gcard '+(full?'b'+g+' glow-'+g:'')+'" style="padding:16px;transition:all .3s;position:relative;overflow:hidden">'
+      + '<div style="position:absolute;inset:0 auto 0 0;width:4px;background:var(--'+gcol(g)+')"></div>'
       + '<div style="display:flex;align-items:center;justify-content:space-between">'
-      + '<span class="ltr g'+g+'" style="font-size:26px;font-weight:900">'+g+'</span>'
+      + '<span class="ltr g'+g+'" style="font-size:28px;font-weight:900;line-height:1">'+g+'</span>'
       + (full ? '<span class="lock-badge">🔒 مكتملة</span>' : '')
       + '</div>'
-      + '<div style="font-size:11px;font-weight:700;color:var(--ink-m);margin-top:4px">'+GROUP_NAMES[g]+'</div>'
-      + '<div style="display:flex;align-items:baseline;gap:4px;margin-top:6px">'
-      + '<span class="ltr" style="font-size:32px;font-weight:900;color:var(--ink);line-height:1">'+c+'</span>'
+      + '<div style="font-size:12px;font-weight:700;color:var(--ink-m);margin-top:6px">'+GROUP_NAMES[g]+'</div>'
+      + '<div style="display:flex;align-items:baseline;gap:6px;margin-top:8px">'
+      + '<span class="ltr g'+g+'" style="font-size:38px;font-weight:900;line-height:1">'+c+'</span>'
       + '<span style="font-size:12px;font-weight:700;color:var(--ink-m)">لاعبين / 4</span>'
       + '</div>'
-      + '<div class="pbar" style="margin-top:8px"><div class="pbar-fill f'+g+'" style="width:'+pct+'%"></div></div>'
+      + '<div class="pbar" style="margin-top:10px;height:8px;border-radius:6px"><div class="pbar-fill f'+g+'" style="width:'+pct+'%"></div></div>'
+      + '<div style="font-size:10px;font-weight:700;color:var(--ink-m);margin-top:6px;text-align:left" class="ltr">'+(full?'ممتلئة':(4-c)+' مقاعد متبقية')+'</div>'
       + '</div>';
   }).join('');
+}
+
+function gcol(g) {
+  return ({A:'--red',B:'--blue',C:'--purple',D:'--cyan'})[g] || '--cyan';
 }
 
 function renderBracket() {
