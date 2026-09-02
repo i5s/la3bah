@@ -38,6 +38,8 @@ tr:hover td{background:rgba(24,38,64,.4)}
 .bB{color:#3b82f6;border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1)}
 .bC{color:#a855f7;border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.1)}
 .bD{color:#22d3ee;border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.1)}
+.grp-sel{font-family:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--border-lt);
+  border-radius:8px;padding:2px 4px;margin-right:4px;font-size:12px;font-weight:800;direction:ltr;cursor:pointer}
 .del-btn{padding:6px 14px;border-radius:8px;background:rgba(255,45,85,.12);color:var(--red);
   font-size:12px;font-weight:800;border:1px solid rgba(255,45,85,.3)}
 .empty{text-align:center;padding:40px;color:var(--ink-m)}
@@ -171,7 +173,13 @@ function renderTable(players) {
       + '<td>'+ (i+1) +'</td>'
       + '<td style="font-weight:800">'+ p.full_name +'</td>'
       + '<td style="direction:ltr;text-align:right">'+ p.phone +'</td>'
-      + '<td><span class="badge b'+ p.group_name +'">'+ ('A B C D'.indexOf(p.group_name)>=0?p.group_name:'') +'</span></td>'
+      + '<td><span class="badge b'+ p.group_name +'">'+ ('A B C D'.indexOf(p.group_name)>=0?p.group_name:'') +'</span>'
+      + ' <select class="grp-sel" onchange="movePlayer(\''+ p.id +'\', this.value)" data-cur="'+ p.group_name +'">'
+      + '<option value="A"'+ (p.group_name==='A'?' selected':'') +'>A</option>'
+      + '<option value="B"'+ (p.group_name==='B'?' selected':'') +'>B</option>'
+      + '<option value="C"'+ (p.group_name==='C'?' selected':'') +'>C</option>'
+      + '<option value="D"'+ (p.group_name==='D'?' selected':'') +'>D</option>'
+      + '</select></td>'
       + '<td class="ltr" style="text-align:right">#'+ String(p.player_number).padStart(2,'0') +'</td>'
       + '<td>'+ new Date(p.created_at).toLocaleTimeString('ar', {hour:'2-digit',minute:'2-digit'}) +'</td>'
       + '<td><button class="del-btn" onclick="deletePlayer(\''+ p.id +'\')">حذف</button></td>'
@@ -196,6 +204,34 @@ async function deletePlayer(id) {
   var st = window.ADMIN_TOURNAMENT;
   var { data } = await ADMIN_SB.rpc('delete_player', { p_player_id: id, p_tournament_id: st.id });
   toast('تم حذف اللاعب ✅');
+  await loadPlayers();
+}
+
+async function movePlayer(id, newGroup) {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!st) return;
+  var sel = document.querySelector('select[onchange="movePlayer(\'' + id + '\', this.value)"]');
+  var cur = sel ? sel.dataset.cur : null;
+  if (newGroup === cur) { return; }
+
+  var totalInTarget = (window.PLAYERS||[]).filter(function(p){ return p.group_name===newGroup; }).length;
+  if (totalInTarget >= 4) {
+    toast('⚠️ المجموعة ' + newGroup + ' ممتلئة (4 لاعبين)');
+    if (sel) sel.value = cur;
+    return;
+  }
+
+  var { data, error } = await ADMIN_SB.rpc('move_player', {
+    p_player_id: id, p_tournament_id: st.id, p_new_group: newGroup
+  });
+
+  if (error || (data && data.ok === false)) {
+    toast('⚠️ تعذر نقل اللاعب');
+    if (sel) sel.value = cur;
+    return;
+  }
+
+  toast('تم نقل اللاعب إلى المجموعة ' + newGroup + ' ✅');
   await loadPlayers();
 }
 
