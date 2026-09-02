@@ -82,7 +82,6 @@ function renderAll() {
   }
 
   renderGroups();
-  renderBracket();
 }
 
 function renderGroups() {
@@ -156,15 +155,6 @@ function renderFinalists() {
   inner.innerHTML = box;
 }
 
-function renderBracket() {
-  el('bracketGroups').innerHTML = GROUPS.map(function(g) {
-    return '<div class="bracket-group">'
-      + '<span style="font-size:13px;font-weight:700">'+GROUP_NAMES[g]+'</span>'
-      + '<span class="ltr g'+g+'" style="font-size:18px;font-weight:900">'+g+'</span></div>';
-  }).join('');
-}
-
-/* ── Tabs ── */
 function switchTab(mode) {
   el('tabBook').className = 'tab' + (mode==='book'?' active':'');
   el('tabCheck').className = 'tab' + (mode==='check'?' active':'');
