@@ -376,6 +376,11 @@ async function init() {
     await loadFinalists();
     renderAll();
     subscribe();
+
+    // استطلاع دوري: يحدّث العداد والمجموعات تلقائياً حتى لو لم يكن Realtime مفعّلاً
+    setInterval(function() {
+      loadCounters().then(function(){ renderAll(); });
+    }, 4000);
   } catch(e) {
     console.error(e);
   }
