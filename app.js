@@ -76,9 +76,9 @@ function renderAll() {
   el('formSection').style.display = canBook ? 'block' : 'none';
 
   if (total >= 16) {
-    el('totalLabel').innerHTML = '<span style="color:var(--red);font-weight:900">العدد مكتمل 🔴 16 / 16</span>';
+    el('totalLabel').innerHTML = '<span style="color:var(--red);font-weight:900">العدد مكتمل 🔴 16 / 16 — انتهى التسجيل</span>';
   } else {
-    el('totalLabel').innerHTML = '<span class="ltr" style="color:var(--ink-m)">'+total+' / 16 مسجل</span>';
+    el('totalLabel').innerHTML = '<span class="ltr" style="color:var(--ink-m)"></span>';
   }
 
   renderGroups();
@@ -332,9 +332,7 @@ function subscribe() {
       var r = p.new;
       if (r && r.group_name && typeof r.player_count === 'number') {
         counters[r.group_name] = r.player_count;
-        renderGroups();
-        var total = GROUPS.reduce(function(s,g){ return s + counters[g]; }, 0);
-        el('totalLabel').textContent = total + ' / 16 مسجل';
+        renderAll();
       }
     })
     .on('postgres_changes', {event:'UPDATE', schema:'public', table:'tournaments', filter:'id=eq.'+tournament.id}, function(p) {
