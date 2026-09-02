@@ -93,11 +93,12 @@ function renderGroups() {
       + (full ? '<span class="lock-badge">🔒 مكتملة</span>' : '')
       + '</div>'
       + '<div style="font-size:11px;font-weight:700;color:var(--ink-m);margin-top:4px">'+GROUP_NAMES[g]+'</div>'
-      + '<div style="font-size:14px;font-weight:900;color:var(--ink);margin-top:4px">'
-      + '<span class="ltr">'+c+'</span><span class="ltr" style="color:var(--ink-m)"> / 4</span> '
-      + '<span style="font-size:11px;font-weight:700;color:var(--ink-m)">لاعبين</span></div>'
-      + '<div class="pbar" style="margin-top:8px">'
-      + '<div class="pbar-fill f'+g+'" style="width:'+pct+'%"></div></div></div>';
+      + '<div style="display:flex;align-items:baseline;gap:4px;margin-top:6px">'
+      + '<span class="ltr" style="font-size:32px;font-weight:900;color:var(--ink);line-height:1">'+c+'</span>'
+      + '<span style="font-size:12px;font-weight:700;color:var(--ink-m)">لاعبين / 4</span>'
+      + '</div>'
+      + '<div class="pbar" style="margin-top:8px"><div class="pbar-fill f'+g+'" style="width:'+pct+'%"></div></div>'
+      + '</div>';
   }).join('');
 }
 

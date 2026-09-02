@@ -134,14 +134,19 @@ body{scrollbar-width:none}
 
 <div class="wrap" id="app">
 
-  <!-- HERO -->
-  <section style="text-align:center;padding:24px 0 16px">
-    <span id="statusChip" class="chip chip-green" style="display:none;margin:0 auto 12px">
+  <!-- HEADER -->
+  <header style="text-align:center;padding:20px 0 4px">
+    <img src="rummikub-logo.png" alt="Rummikub" style="height:48px;width:auto;margin-bottom:8px">
+    <h1 class="neon" style="font-size:34px;font-weight:900;line-height:1.15">بطولة الشرقية</h1>
+    <span id="statusChip" class="chip chip-green" style="display:none;margin:8px auto 0">
       <span style="width:6px;height:6px;border-radius:50%;background:currentColor" class="anim-pulse"></span>
       <span id="statusText"></span>
     </span>
-    <h1 class="neon" style="font-size:40px;font-weight:900;line-height:1.15">بطولة الشرقية</h1>
-    <p style="font-size:18px;font-weight:800;color:var(--ink);margin-top:8px">للعب روميكوب</p>
+  </header>
+
+  <!-- HERO -->
+  <section style="text-align:center;padding:12px 0 16px">
+    <p style="font-size:18px;font-weight:800;color:var(--ink)">للعب روميكوب</p>
     <p style="font-size:13px;color:var(--ink-s);max-width:340px;margin:6px auto 0">احجز مكانك الآن وسيتم توزيعك عشوائياً على إحدى المجموعات</p>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px">
@@ -219,10 +224,11 @@ body{scrollbar-width:none}
 
   <!-- GROUPS -->
   <section style="margin-top:24px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
       <h2 style="display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900"><span>⚔️</span> المجموعات</h2>
       <span id="totalLabel" class="ltr" style="font-size:11px;font-weight:700;color:var(--ink-m)">0 / 16 مسجل</span>
     </div>
+    <p style="font-size:12px;color:var(--ink-s);margin-bottom:12px">16 لاعباً يُوزّعون على 4 مجموعات — كل مجموعة تتّسع لـ <strong style="color:var(--ink)">4 لاعبين</strong></p>
     <div id="groupsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
   </section>
 
