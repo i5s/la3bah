@@ -42,6 +42,15 @@ tr:hover td{background:rgba(24,38,64,.4)}
   border-radius:8px;padding:2px 4px;margin-right:4px;font-size:12px;font-weight:800;direction:ltr;cursor:pointer}
 .del-btn{padding:6px 14px;border-radius:8px;background:rgba(255,45,85,.12);color:var(--red);
   font-size:12px;font-weight:800;border:1px solid rgba(255,45,85,.3)}
+.q-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:800;border:1px solid;
+  transition:all .15s;white-space:nowrap}
+.q-btn:active{transform:scale(.95)}
+.q-off{background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.35)}
+.q-on{background:rgba(168,85,247,.14);color:#c084fc;border-color:rgba(168,85,247,.4)}
+.q-chip{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:20px;
+  font-size:10px;font-weight:800;color:#4ade80;background:rgba(34,197,94,.12);
+  border:1px solid rgba(34,197,94,.35);margin-left:6px}
+tr.qual-row td{background:rgba(34,197,94,.05)}
 .empty{text-align:center;padding:40px;color:var(--ink-m)}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px}
 .btn{padding:11px 18px;border-radius:10px;font-size:13px;font-weight:800}
@@ -80,7 +89,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
   <div class="gcard" style="margin-top:16px;overflow:auto">
     <table id="table">
-      <thead><tr><th>#</th><th>الاسم</th><th>الجوال</th><th>المجموعة</th><th>رقم اللاعب</th><th>الوقت</th><th></th></tr></thead>
+      <thead><tr><th>#</th><th>الاسم</th><th>الجوال</th><th>المجموعة</th><th>رقم اللاعب</th><th>الوقت</th><th>المتأهل</th><th></th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     <div class="empty" id="empty" style="display:none">لا يوجد لاعبون مسجلون بعد</div>
@@ -143,8 +152,25 @@ async function loadPlayers() {
 
   var players = data || [];
   window.PLAYERS = players;
+  await loadFinalists();
   renderTable(players);
   renderStats(players);
+}
+
+/* ── المتأهلون ── */
+async function loadFinalists() {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!st) return;
+  var { data } = await ADMIN_SB.rpc('get_finalists', { p_tournament_id: st.id });
+  window.FINALISTS = data || [];
+  window.FINALIST_IDS = {};
+  (window.FINALISTS || []).forEach(function(f) {
+    window.FINALIST_IDS[f.player_id] = { group_name: f.group_name, full_name: f.full_name, player_number: f.player_number };
+  });
+}
+
+function isFinalist(id) {
+  return !!(window.FINALIST_IDS && window.FINALIST_IDS[id]);
 }
 
 function renderStats(players) {
@@ -169,9 +195,14 @@ function renderTable(players) {
   empty.style.display='none';
 
   tbody.innerHTML = players.map(function(p, i) {
-    return '<tr>'
+    var aq = isFinalist(p.id);
+    var qualBtn = aq
+      ? '<button class="q-btn q-on" onclick="unqualify(\''+ p.id +'\')">إلغاء التأهل</button>'
+      : '<button class="q-btn q-off" onclick="qualify(\''+ p.id +'\')">متأهل</button>';
+    var nameChip = aq ? '<span class="q-chip">✔ متأهل</span>' : '';
+    return '<tr'+(aq?' class="qual-row"':'')+'>'
       + '<td>'+ (i+1) +'</td>'
-      + '<td style="font-weight:800">'+ p.full_name +'</td>'
+      + '<td style="font-weight:800">'+ p.full_name + nameChip +'</td>'
       + '<td style="direction:ltr;text-align:right">'+ p.phone +'</td>'
       + '<td><span class="badge b'+ p.group_name +'">'+ ('A B C D'.indexOf(p.group_name)>=0?p.group_name:'') +'</span>'
       + ' <select class="grp-sel" onchange="movePlayer(\''+ p.id +'\', this.value)" data-cur="'+ p.group_name +'">'
@@ -182,6 +213,7 @@ function renderTable(players) {
       + '</select></td>'
       + '<td class="ltr" style="text-align:right">#'+ String(p.player_number).padStart(2,'0') +'</td>'
       + '<td>'+ new Date(p.created_at).toLocaleTimeString('ar', {hour:'2-digit',minute:'2-digit'}) +'</td>'
+      + '<td>'+ qualBtn +'</td>'
       + '<td><button class="del-btn" onclick="deletePlayer(\''+ p.id +'\')">حذف</button></td>'
       + '</tr>';
   }).join('');
@@ -235,6 +267,40 @@ async function movePlayer(id, newGroup) {
   await loadPlayers();
 }
 
+async function qualify(id) {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!st) return;
+  var { data, error } = await ADMIN_SB.rpc('set_finalist', {
+    p_player_id: id, p_tournament_id: st.id
+  });
+  if (error || (data && data.ok === false)) {
+    toast('⚠️ تعذر تأهيل اللاعب');
+    return;
+  }
+  toast('✔ تم تأهيل ' + (data.full_name || 'اللاعب') + ' ✅');
+  await loadPlayers();
+}
+
+async function unqualify(id) {
+  var st = window.ADMIN_TOURNAMENT;
+  if (!st) return;
+  try {
+    var { data, error } = await ADMIN_SB.rpc('unset_finalist', {
+      p_player_id: id, p_tournament_id: st.id
+    });
+    if (error) {
+      // الدالة لا توجد بعد — نسأل المستخدم عن الإنشاء
+      toast('⚠️ دالة unset_finalist غير موجودة. أنشئها في Supabase (راجع ملف SQL)');
+      return;
+    }
+    toast('تم إلغاء التأهل ❌');
+    await loadPlayers();
+  } catch (err) {
+    console.error(err);
+    toast('⚠️ تعذر إلغاء التأهل');
+  }
+}
+
 async function reopenReg() {
   var st = window.ADMIN_TOURNAMENT;
   var { data } = await ADMIN_SB.rpc('reopen_registration', { p_tournament_id: st.id });
@@ -258,6 +324,7 @@ function subscribeCounters() {
   if (!st) return;
   ADMIN_SB.channel('admin-rt')
     .on('postgres_changes', {event:'*', schema:'public', table:'players', filter:'tournament_id=eq.'+st.id}, function(){ loadPlayers(); })
+    .on('postgres_changes', {event:'*', schema:'public', table:'finalists', filter:'tournament_id=eq.'+st.id}, function(){ loadPlayers(); })
     .subscribe();
 }
 
